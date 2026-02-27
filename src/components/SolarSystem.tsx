@@ -1,10 +1,13 @@
 import { useEffect, useRef } from 'react';
+import { useTheme } from 'next-themes';
 
 /**
  * Pure CSS/Canvas solar system background
  */
 export function SolarSystem() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -61,10 +64,10 @@ export function SolarSystem() {
 
       // Stars
       stars.forEach((s) => {
-        const opacity = 0.3 + 0.7 * Math.sin(time * s.speed * 100 + s.phase);
+        const opacity = (0.3 + 0.7 * Math.sin(time * s.speed * 100 + s.phase)) * (isDark ? 1 : 0.6);
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${opacity})`;
+        ctx.fillStyle = isDark ? `rgba(255,255,255,${opacity})` : `rgba(0,0,0,${opacity})`;
         ctx.fill();
       });
 
@@ -73,17 +76,24 @@ export function SolarSystem() {
 
       // Central glowing core
       const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 35);
-      coreGrad.addColorStop(0, '#ffffff');
-      coreGrad.addColorStop(0.3, '#e0e7ff');
-      coreGrad.addColorStop(0.8, '#818cf8');
-      coreGrad.addColorStop(1, 'rgba(99,102,241,0)');
+      if (isDark) {
+        coreGrad.addColorStop(0, '#ffffff');
+        coreGrad.addColorStop(0.3, '#e0e7ff');
+        coreGrad.addColorStop(0.8, '#818cf8');
+        coreGrad.addColorStop(1, 'rgba(99,102,241,0)');
+      } else {
+        coreGrad.addColorStop(0, '#4f46e5');
+        coreGrad.addColorStop(0.3, '#818cf8');
+        coreGrad.addColorStop(0.8, '#c7d2fe');
+        coreGrad.addColorStop(1, 'rgba(99,102,241,0)');
+      }
       ctx.beginPath();
       ctx.arc(cx, cy, 35, 0, Math.PI * 2);
       ctx.fillStyle = coreGrad;
       ctx.fill();
 
       // Core text
-      ctx.fillStyle = '#1e1b4b';
+      ctx.fillStyle = isDark ? '#1e1b4b' : '#ffffff';
       ctx.font = 'bold 12px "Inter", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -91,8 +101,13 @@ export function SolarSystem() {
 
       // Core glow
       const glowGrad = ctx.createRadialGradient(cx, cy, 25, cx, cy, 90);
-      glowGrad.addColorStop(0, 'rgba(99,102,241,0.25)');
-      glowGrad.addColorStop(1, 'rgba(99,102,241,0)');
+      if (isDark) {
+        glowGrad.addColorStop(0, 'rgba(99,102,241,0.25)');
+        glowGrad.addColorStop(1, 'rgba(99,102,241,0)');
+      } else {
+        glowGrad.addColorStop(0, 'rgba(79,70,229,0.15)');
+        glowGrad.addColorStop(1, 'rgba(79,70,229,0)');
+      }
       ctx.beginPath();
       ctx.arc(cx, cy, 90, 0, Math.PI * 2);
       ctx.fillStyle = glowGrad;
@@ -103,7 +118,7 @@ export function SolarSystem() {
         // Orbit path
         ctx.beginPath();
         ctx.arc(cx, cy, p.orbitRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
         ctx.lineWidth = 1;
         ctx.stroke();
 
@@ -145,7 +160,7 @@ export function SolarSystem() {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
     };
-  }, []);
+  }, [isDark]); // Re-run effect when theme changes to redraw completely
 
   return (
     <canvas
