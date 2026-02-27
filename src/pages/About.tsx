@@ -29,9 +29,6 @@ export default function About() {
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-light tracking-wide mb-4">
                 About
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground font-light tracking-wide mb-2">
-                Photographer & Visual Storyteller
-              </p>
               <p className="text-base md:text-lg text-muted-foreground/80 font-light tracking-wide italic">
                 do you really wanna see me?
               </p>
@@ -125,7 +122,7 @@ export default function About() {
                     {photographerInfo.name}
                   </h2>
                   <p className="text-xl text-muted-foreground font-light tracking-wide">
-                    {photographerInfo.tagline}
+                    your friendly neighbourhood boy
                   </p>
                 </div>
 
