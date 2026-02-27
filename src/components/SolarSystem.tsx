@@ -33,16 +33,26 @@ export function SolarSystem() {
       });
     }
 
-    const planets = [
-      { orbitRadius: 60, size: 4, color: '#a0a0a0', speed: 0.02, name: 'Mercury' },
-      { orbitRadius: 95, size: 6, color: '#e8c76a', speed: 0.015, name: 'Venus' },
-      { orbitRadius: 135, size: 7, color: '#4d9de0', speed: 0.012, name: 'Earth' },
-      { orbitRadius: 175, size: 5, color: '#e06c4d', speed: 0.009, name: 'Mars' },
-      { orbitRadius: 240, size: 14, color: '#d4a373', speed: 0.005, name: 'Jupiter' },
-      { orbitRadius: 310, size: 12, color: '#c9b06b', speed: 0.003, name: 'Saturn', rings: true },
-      { orbitRadius: 370, size: 9, color: '#7ec8e3', speed: 0.002, name: 'Uranus' },
-      { orbitRadius: 420, size: 8, color: '#4169e1', speed: 0.001, name: 'Neptune' },
+    const skills = [
+      { orbitRadius: 70, size: 5, color: '#61dafb', speed: 0.012, name: 'React', iconPath: 'https://cdn.simpleicons.org/react/61DAFB' },
+      { orbitRadius: 115, size: 5, color: '#3178c6', speed: 0.010, name: 'TypeScript', iconPath: 'https://cdn.simpleicons.org/typescript/3178C6' },
+      { orbitRadius: 165, size: 5, color: '#38bdf8', speed: 0.008, name: 'Tailwind CSS', iconPath: 'https://cdn.simpleicons.org/tailwindcss/06B6D4' },
+      { orbitRadius: 215, size: 5, color: '#646cff', speed: 0.007, name: 'Vite', iconPath: 'https://cdn.simpleicons.org/vite/646CFF' },
+      { orbitRadius: 270, size: 5, color: '#8cc84b', speed: 0.006, name: 'Node.js', iconPath: 'https://cdn.simpleicons.org/nodedotjs/339933' },
+      { orbitRadius: 330, size: 5, color: '#ffffff', speed: 0.005, name: 'Next.js', iconPath: 'https://cdn.simpleicons.org/nextdotjs/white' },
+      { orbitRadius: 390, size: 5, color: '#f34f29', speed: 0.004, name: 'Git', iconPath: 'https://cdn.simpleicons.org/git/F05032' },
+      { orbitRadius: 460, size: 5, color: '#f24e1e', speed: 0.003, name: 'Figma', iconPath: 'https://cdn.simpleicons.org/figma/F24E1E' },
+      { orbitRadius: 530, size: 5, color: '#3776ab', speed: 0.002, name: 'Python', iconPath: 'https://cdn.simpleicons.org/python/3776AB' },
     ];
+
+    const loadedImages = new Map<string, HTMLImageElement>();
+
+    // Initialize skill icon images
+    skills.forEach(skill => {
+      const img = new Image();
+      img.src = skill.iconPath;
+      loadedImages.set(skill.name, img);
+    });
 
     let time = 0;
 
@@ -61,28 +71,35 @@ export function SolarSystem() {
       const cx = canvas.width * 0.5;
       const cy = canvas.height * 0.5;
 
-      // Sun
-      const sunGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 30);
-      sunGrad.addColorStop(0, '#fff7e0');
-      sunGrad.addColorStop(0.3, '#ffd24d');
-      sunGrad.addColorStop(0.7, '#ff8c00');
-      sunGrad.addColorStop(1, 'rgba(255,140,0,0)');
+      // Central glowing core
+      const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 35);
+      coreGrad.addColorStop(0, '#ffffff');
+      coreGrad.addColorStop(0.3, '#e0e7ff');
+      coreGrad.addColorStop(0.8, '#818cf8');
+      coreGrad.addColorStop(1, 'rgba(99,102,241,0)');
       ctx.beginPath();
-      ctx.arc(cx, cy, 30, 0, Math.PI * 2);
-      ctx.fillStyle = sunGrad;
+      ctx.arc(cx, cy, 35, 0, Math.PI * 2);
+      ctx.fillStyle = coreGrad;
       ctx.fill();
 
-      // Sun glow
-      const glowGrad = ctx.createRadialGradient(cx, cy, 20, cx, cy, 80);
-      glowGrad.addColorStop(0, 'rgba(255,200,50,0.15)');
-      glowGrad.addColorStop(1, 'rgba(255,200,50,0)');
+      // Core text
+      ctx.fillStyle = '#1e1b4b';
+      ctx.font = 'bold 12px "Inter", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('SKILLS', cx, cy);
+
+      // Core glow
+      const glowGrad = ctx.createRadialGradient(cx, cy, 25, cx, cy, 90);
+      glowGrad.addColorStop(0, 'rgba(99,102,241,0.25)');
+      glowGrad.addColorStop(1, 'rgba(99,102,241,0)');
       ctx.beginPath();
-      ctx.arc(cx, cy, 80, 0, Math.PI * 2);
+      ctx.arc(cx, cy, 90, 0, Math.PI * 2);
       ctx.fillStyle = glowGrad;
       ctx.fill();
 
-      // Orbits and planets
-      planets.forEach((p) => {
+      // Orbits and skills
+      skills.forEach((p) => {
         // Orbit path
         ctx.beginPath();
         ctx.arc(cx, cy, p.orbitRadius, 0, Math.PI * 2);
@@ -90,34 +107,32 @@ export function SolarSystem() {
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Planet position
+        // Position
         const angle = time * p.speed;
         const px = cx + Math.cos(angle) * p.orbitRadius;
         const py = cy + Math.sin(angle) * p.orbitRadius;
 
-        // Saturn rings
-        if (p.rings) {
-          ctx.beginPath();
-          ctx.ellipse(px, py, p.size * 2.2, p.size * 0.6, Math.PI / 6, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(201,176,107,0.4)';
-          ctx.lineWidth = 2;
-          ctx.stroke();
-        }
-
-        // Planet
+        // Skill node
         ctx.beginPath();
         ctx.arc(px, py, p.size, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
         ctx.fill();
 
-        // Planet glow
-        const pGlow = ctx.createRadialGradient(px, py, p.size * 0.5, px, py, p.size * 2.5);
-        pGlow.addColorStop(0, p.color + '40');
+        // Skill node glow
+        const pGlow = ctx.createRadialGradient(px, py, p.size * 0.5, px, py, p.size * 3.5);
+        pGlow.addColorStop(0, p.color + '80');
         pGlow.addColorStop(1, p.color + '00');
         ctx.beginPath();
-        ctx.arc(px, py, p.size * 2.5, 0, Math.PI * 2);
+        ctx.arc(px, py, p.size * 3.5, 0, Math.PI * 2);
         ctx.fillStyle = pGlow;
         ctx.fill();
+
+        // Skill name icon/image
+        const img = loadedImages.get(p.name);
+        if (img && img.complete) {
+          const imgSize = 24; // Draw the icon with 24x24 dimensions
+          ctx.drawImage(img, px + p.size + 8, py - imgSize / 2, imgSize, imgSize);
+        }
       });
 
       time += 1;
